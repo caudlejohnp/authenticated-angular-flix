@@ -1,25 +1,45 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
+import { AuthenticationService } from "../authentication.service";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-signup-login',
-  templateUrl: './signup-login.component.html',
-  styleUrls: ['./signup-login.component.css']
+  selector: "app-signup-login",
+  templateUrl: "./signup-login.component.html",
+  styleUrls: ["./signup-login.component.css"],
 })
 export class SignupLoginComponent implements OnInit {
+  user: {
+    username: string;
+    password: string;
+  };
 
-  username: string;
-  password: string;
-  constructor() { }
+  invalidLogin = false;
 
-  ngOnInit() {
+  constructor(
+    private authService: AuthenticationService,
+    private router: Router) { 
+    this.user = {
+      username: '',
+      password: ''
+    }
+    }
+  
+
+  ngOnInit() {}
+
+  async login(): Promise<void> {
+    await this.authService.login(this.user.username, this.user.password);
+
+    if (this.authService.getToken === undefined) {
+      this.invalidLogin = true;
+    } else {
+      this.invalidLogin = false;
+      this.router.navigate(["/main"]);
+    }
   }
 
-  async login() {
-
+  async signUp(): Promise<void> {
+    await this.authService.signUp(this.user.username, this.user.password);
+    await this.login();
   }
-
-  signUp() {
-    
-  }
-
 }
